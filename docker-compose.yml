@@ -1,0 +1,132 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: .devcontainer/dockerfiles/php.dockerfile
+    volumes:
+      - ./src:/var/www/html
+      - vendor-cache:/var/www/html/vendor
+      - node-cache:/var/www/html/node_modules
+      - ./.devcontainer:/workspace/.devcontainer
+    working_dir: /var/www/html
+    ports:
+      - "8081:8000"
+    environment:
+      APP_ENV: ${APP_ENV}
+      APP_DEBUG: ${APP_DEBUG}
+      DB_CONNECTION: ${DB_CONNECTION}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      MAIL_MAILER: ${MAIL_MAILER}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+    depends_on:
+      pgsql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mailpit:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "php-fpm -t || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  web:
+    build:
+      context: .
+      dockerfile: .devcontainer/dockerfiles/nginx.dockerfile
+    ports:
+      - "8011:80"
+    volumes:
+      - ./src:/var/www/html
+      - ./config/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      pgsql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mailpit:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:80 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  pgsql:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d raafco_ims_pgsql"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      pgsql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:80/login || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-server", "--version"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  mailpit:
+    restart: unless-stopped
+    image: axllent/mailpit:latest
+    ports:
+      - "${MP_WEB_PORT}:8025" # Web UI
+      - "${MAIL_PORT}:1025" # SMTP
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: ${MP_SMTP_AUTH_ACCEPT_ANY}
+      MP_SMTP_AUTH_ALLOW_INSECURE: ${MP_SMTP_AUTH_ALLOW_INSECURE}
+      MP_WEB_ROOT: ${MP_WEB_ROOT}
+      MP_DATABASE: ${MP_DATABASE}
+      MP_SMTP_BIND_ADDR: 0.0.0.0:${MAIL_PORT}
+      MP_WEB_BIND_ADDR: 0.0.0.0:${MP_WEB_PORT}
+    volumes:
+      - mailpit_data:/tmp
+    healthcheck:
+      test: ["CMD", "nc", "-z", "127.0.0.1", "8025"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  db_pg_data:
+  vendor-cache:
+  node-cache:
+  mailpit_data:
+  pgadmin_data:

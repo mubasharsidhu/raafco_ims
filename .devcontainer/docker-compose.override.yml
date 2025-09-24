@@ -1,0 +1,9 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: .devcontainer/dockerfiles/php.dockerfile
+
+    command: ["php-fpm"] # default to PHP-FPM (production-like)
+    # if you want artisan serve instead for dev, swap with:
+    # command: ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]

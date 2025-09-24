@@ -1,0 +1,183 @@
+{
+  "name": "raafco-ims-dev",
+  "dockerComposeFile": ["../docker-compose.yml", "docker-compose.override.yml"],
+  "service": "app",
+  "remoteUser": "vscode",
+  "containerUser": "vscode",
+  "workspaceFolder": "/var/www/html",
+  "shutdownAction": "stopCompose",
+
+  // Mount your source code only (excluding vendor/node_modules)
+  "mounts": [
+    "source=${localWorkspaceFolder}/src,target=/var/www/html,type=bind,consistency=cached",
+    "source=vendor-cache,target=/var/www/html/vendor,type=volume",
+    "source=node-cache,target=/var/www/html/node_modules,type=volume",
+    "source=${localEnv:HOME}/.composer,target=/home/vscode/.composer,type=bind" // Composer cache mount
+  ],
+
+  "forwardPorts": [5173, 8081, 9003],
+  "portsAttributes": {
+    "8025": { "label": "mailpit", "onAutoForward": "ignore" },
+    "5050": { "label": "pgadmin", "onAutoForward": "ignore" }
+  },
+  "postCreateCommand": "make setup",
+
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {},
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/node:1": { "version": "22" }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // PHP Development
+        "bmewburn.vscode-intelephense-client",
+        "xdebug.php-debug",
+        "junstyle.php-cs-fixer",
+        "wongjn.php-sniffer",
+
+        // Laravel Specific
+        "onecentlin.laravel-blade",
+        "onecentlin.laravel5-snippets",
+        "amiralizadeh9480.laravel-extra-intellisense",
+        "codingyu.laravel-goto-view",
+        "ryannaddy.laravel-artisan",
+        "mehedidracula.php-namespace-resolver",
+        "neilbrayfield.php-docblocker",
+        "shufo.vscode-blade-formatter",
+        "stef-k.laravel-goto-controller",
+        "austenc.laravel-blade-spacer",
+        "open-southeners.laravel-pint",
+
+        // Database & SQL
+        "cweijan.vscode-database-client2",
+        "mohammadaziz.vscode-pg-snippets",
+
+        // Docker & Containers
+        "ms-azuretools.vscode-docker",
+
+        // Git
+        "eamodio.gitlens",
+        "mhutchie.git-graph",
+
+        // Frontend (if using)
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "ecmel.vscode-html-css",
+        "stylelint.vscode-stylelint",
+        "bradlc.vscode-tailwindcss",
+
+        // Environment & Config
+        "mikestead.dotenv",
+        "redhat.vscode-yaml",
+
+        // Utilities
+        "editorconfig.editorconfig",
+        "formulahendry.auto-rename-tag",
+        "formulahendry.auto-close-tag",
+        "streetsidesoftware.code-spell-checker",
+        "sleistner.vscode-fileutils",
+        "gruntfuggly.todo-tree",
+        "vscode-icons-team.vscode-icons",
+        "ms-vscode.makefile-tools",
+
+        //Quality
+        "SonarSource.sonarlint-vscode"
+      ],
+      "settings": {
+        // --- Java Runtime for Sonar Lint ---
+        "sonarlint.ls.javaHome": "/usr/lib/jvm/java-21-openjdk-arm64",
+        "sonarlint.ls.enabled": ["php", "js"],
+
+        // --- PHP & Laravel ---
+        "php.validate.executablePath": "/usr/local/bin/php",
+        "intelephense.environment.phpVersion": "8.3",
+        "intelephense.files.maxSize": 5000000,
+        "intelephense.stubs": ["pdo_pgsql", "pgsql"],
+
+        // Laravel artisan integration
+        "laravel-artisan.showOutput": true,
+
+        "[php]": {
+          "editor.defaultFormatter": "open-southeners.laravel-pint"
+        },
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[vue]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[yaml]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+
+        // --- Blade & Formatting ---
+        "[blade]": {
+          "editor.defaultFormatter": "shufo.vscode-blade-formatter"
+        },
+        "bladeFormatter.format.indentSize": 2,
+        "bladeFormatter.format.wrapLineLength": 120,
+
+        // --- Tailwind & Frontend ---
+        "editor.quickSuggestions": { "strings": true },
+        "tailwindCSS.includeLanguages": {
+          "blade": "html",
+          "php": "html"
+        },
+
+        // --- Prettier & ESLint ---
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "eslint.validate": [
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact",
+          "vue"
+        ],
+        "stylelint.validate": ["css", "scss", "less", "postcss"],
+
+        // --- Git ---
+        "git.confirmSync": false,
+        "git.autofetch": true,
+
+        // --- PostgreSQL (Database Client 2) ---
+        "database-client.connections": [
+          {
+            "name": "Postgres (Local Dev)",
+            "driver": "PostgreSQL",
+            "server": "pgsql", // service name from docker-compose
+            "port": 5432,
+            "username": "admin",
+            "password": "admin",
+            "database": "raafco_ims_pgsql"
+          }
+        ],
+
+        // --- Utilities ---
+        "files.exclude": {
+          "**/vendor": true,
+          "**/node_modules": true,
+          "**/storage/framework/cache": true,
+          "**/storage/logs": true,
+          "**/bootstrap/cache": true
+        },
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.detectIndentation": false,
+        "files.autoSave": "onFocusChange",
+        "editor.renderWhitespace": "boundary",
+        "editor.minimap.enabled": true,
+        "editor.wordWrap": "on",
+        "cSpell.language": "en,en-US"
+      }
+    }
+  }
+}

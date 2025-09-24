@@ -5,6 +5,7 @@ on:
     branches: ["main"]
   pull_request:
     branches: ["main"]
+  workflow_dispatch: # allows manual run
 
 jobs:
   laravel-tests:
@@ -31,23 +32,40 @@ jobs:
           - 6379:6379
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
-          extensions: mbstring, intl, pdo_pgsql, redis
+          extensions: mbstring, intl, pdo_pgsql, redis, bcmath, pcntl, zip
           coverage: none
 
-      - name: Install dependencies
+      - name: Install Composer dependencies
+        working-directory: ./src
         run: composer install --no-interaction --prefer-dist --no-progress
 
+      - name: Copy .env.testing
+        working-directory: ./src
+        run: cp .env.testing .env
+
+      - name: Generate app key
+        working-directory: ./src
+        run: php artisan key:generate
+
+      - name: Run migrations
+        working-directory: ./src
+        run: php artisan migrate --force
+
       - name: Run Pint (code style)
+        working-directory: ./src
         run: ./vendor/bin/pint --test
 
       - name: Run PHPStan (static analysis)
-        run: ./vendor/bin/phpstan analyse
+        working-directory: ./src
+        run: ./vendor/bin/phpstan analyse --memory-limit=2G
 
-      - name: Run Pest (tests)
+      - name: Run Pest tests
+        working-directory: ./src
         run: ./vendor/bin/pest

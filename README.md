@@ -1,5 +1,3 @@
-cat > README.md <<'EOF'
-
 # Laravel Inventory (Invoices + Stock)
 
 Monorepo for a Laravel-based inventory & invoicing app.

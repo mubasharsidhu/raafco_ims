@@ -21,19 +21,19 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U admin -d raafco_ims_pgsql"
+          --health-cmd "pg_isready -U admin"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
 
       redis:
-        image: redis:alpine
+        image: redis:7-alpine
         ports:
           - 6379:6379
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -41,6 +41,15 @@ jobs:
           php-version: "8.3"
           extensions: mbstring, intl, pdo_pgsql, redis, bcmath, pcntl, zip
           coverage: none
+
+      - name: Wait for Postgres to be ready
+        run: |
+          echo "Waiting for PostgreSQL..."
+          until pg_isready -h pgsql -p 5432 -U admin; do
+            echo "Postgres is unavailable - sleeping"
+            sleep 2
+          done
+          echo "Postgres is ready"
 
       - name: Install Composer dependencies
         working-directory: ./src

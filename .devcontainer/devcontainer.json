@@ -79,105 +79,11 @@
         "streetsidesoftware.code-spell-checker",
         "sleistner.vscode-fileutils",
         "gruntfuggly.todo-tree",
-        "vscode-icons-team.vscode-icons",
         "ms-vscode.makefile-tools",
 
         //Quality
         "SonarSource.sonarlint-vscode"
-      ],
-      "settings": {
-        // --- Java Runtime for Sonar Lint ---
-        "sonarlint.ls.javaHome": "/usr/lib/jvm/java-21-openjdk-arm64",
-        "sonarlint.ls.enabled": ["php", "js"],
-
-        // --- PHP & Laravel ---
-        "php.validate.executablePath": "/usr/local/bin/php",
-        "intelephense.environment.phpVersion": "8.3",
-        "intelephense.files.maxSize": 5000000,
-        "intelephense.stubs": ["pdo_pgsql", "pgsql"],
-
-        // Laravel artisan integration
-        "laravel-artisan.showOutput": true,
-
-        "[php]": {
-          "editor.defaultFormatter": "open-southeners.laravel-pint"
-        },
-        "[javascript]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        },
-        "[typescript]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        },
-        "[vue]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        },
-        "[json]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        },
-        "[yaml]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        },
-
-        // --- Blade & Formatting ---
-        "[blade]": {
-          "editor.defaultFormatter": "shufo.vscode-blade-formatter"
-        },
-        "bladeFormatter.format.indentSize": 2,
-        "bladeFormatter.format.wrapLineLength": 120,
-
-        // --- Tailwind & Frontend ---
-        "editor.quickSuggestions": { "strings": true },
-        "tailwindCSS.includeLanguages": {
-          "blade": "html",
-          "php": "html"
-        },
-
-        // --- Prettier & ESLint ---
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.formatOnSave": true,
-        "eslint.validate": [
-          "javascript",
-          "javascriptreact",
-          "typescript",
-          "typescriptreact",
-          "vue"
-        ],
-        "stylelint.validate": ["css", "scss", "less", "postcss"],
-
-        // --- Git ---
-        "git.confirmSync": false,
-        "git.autofetch": true,
-
-        // --- PostgreSQL (Database Client 2) ---
-        "database-client.connections": [
-          {
-            "name": "Postgres (Local Dev)",
-            "driver": "PostgreSQL",
-            "server": "pgsql", // service name from docker-compose
-            "port": 5432,
-            "username": "admin",
-            "password": "admin",
-            "database": "raafco_ims_pgsql"
-          }
-        ],
-
-        // --- Utilities ---
-        "files.exclude": {
-          "**/vendor": true,
-          "**/node_modules": true,
-          "**/storage/framework/cache": true,
-          "**/storage/logs": true,
-          "**/bootstrap/cache": true
-        },
-        "editor.tabSize": 2,
-        "editor.insertSpaces": true,
-        "editor.detectIndentation": false,
-        "files.autoSave": "onFocusChange",
-        "editor.renderWhitespace": "boundary",
-        "editor.minimap.enabled": true,
-        "editor.wordWrap": "on",
-        "cSpell.language": "en,en-US"
-      }
+      ]
     }
   }
 }

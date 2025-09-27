@@ -60,7 +60,7 @@ services:
       start_period: 10s
 
   pgsql:
-    image: postgres:15
+    image: postgres:17
     restart: always
     environment:
       POSTGRES_DB: ${DB_DATABASE}
@@ -76,7 +76,7 @@ services:
       start_period: 10s
 
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:9
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
@@ -84,6 +84,7 @@ services:
       - "5050:80"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
+      - ./pgadmin/servers.json:/pgadmin4/servers.json
     depends_on:
       pgsql:
         condition: service_healthy
@@ -95,7 +96,7 @@ services:
       start_period: 15s
 
   redis:
-    image: redis:7-alpine
+    image: redis:8
     healthcheck:
       test: ["CMD", "redis-server", "--version"]
       interval: 10s
@@ -105,7 +106,7 @@ services:
 
   mailpit:
     restart: unless-stopped
-    image: axllent/mailpit:latest
+    image: axllent/mailpit:v1.27
     ports:
       - "${MP_WEB_PORT}:8025" # Web UI
       - "${MAIL_PORT}:1025" # SMTP

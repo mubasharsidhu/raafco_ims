@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "Raafco PGSQL",
+      "Group": "Servers",
+      "Port": 5432,
+      "Username": "admin",
+      "Host": "pgsql",
+      "MaintenanceDB": "postgres",
+      "SSLMode": "prefer"
+    }
+  }
+}

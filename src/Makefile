@@ -1,6 +1,11 @@
-# Commands
-PHP_ART=php artisan
-INIT_FILE=/var/www/html/.initialized
+# ======================
+# Config
+# ======================
+
+# Default env file (can be overridden: make migrate ENV_FILE=.env.testing)
+ENV_FILE ?= .env
+PHP_ART = php artisan --env=$(shell basename $(ENV_FILE) | sed 's/.env//; s/\.//g')
+INIT_FILE = /var/www/html/.initialized
 
 
 # ======================
@@ -15,19 +20,16 @@ INIT_FILE=/var/www/html/.initialized
 # Laravel / Artisan
 # ======================
 
-# Run migrations
 migrate:
-	@echo "🔄 Running migrations..."
+	@echo "🔄 Running migrations with $(ENV_FILE)..."
 	$(PHP_ART) migrate
 	@echo "✅ Migrations complete!"
 
-# Refresh DB with seed
 refresh:
-	@echo "🧹 Refreshing database..."
+	@echo "🧹 Refreshing database with $(ENV_FILE)..."
 	$(PHP_ART) migrate:fresh --seed
 	$(MAKE) cache-clear
 	@echo "✅ Database refreshed!"
-
 
 rollback:
 	$(PHP_ART) migrate:rollback
@@ -53,7 +55,6 @@ optimize:
 composer-update:
 	composer update --ignore-platform-reqs
 
-# Composer install only if vendor/ doesn't exist
 composer-install:
 	@if [ ! -f vendor/autoload.php ]; then \
 		echo "📦 Installing PHP dependencies..."; \
@@ -62,7 +63,6 @@ composer-install:
 		echo "✅ PHP dependencies already installed. Skipping."; \
 	fi
 
-# NPM install only if node_modules/ doesn't exist
 npm-install:
 	@if [ ! -d node_modules ] || [ ! -f node_modules/.package-lock.json ]; then \
 		echo "📦 Installing JS dependencies..."; \
@@ -83,6 +83,7 @@ npm-dev:
 # ======================
 
 test:
+	@echo "🧪 Running tests with $(ENV_FILE)..."
 	$(PHP_ART) test
 
 
@@ -96,7 +97,7 @@ env:
 		$(PHP_ART) key:generate --ansi --force; \
 	fi
 
-force-env: ## Force recreate .env from .env.example
+force-env:
 	cp .env.example .env && echo "♻️  .env recreated from example"
 	$(PHP_ART) key:generate --ansi --force
 
@@ -105,7 +106,6 @@ force-env: ## Force recreate .env from .env.example
 # Project Setup
 # ======================
 
-# Run initial setup (only first time after devcontainer creation)
 init:
 	@if [ ! -f $(INIT_FILE) ]; then \
 		$(MAKE) env; \
@@ -124,6 +124,6 @@ setup: composer-install init npm-install npm-build
 # Help
 # ======================
 
-help: ## Show available commands
+help:
 	@echo "Available targets:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'

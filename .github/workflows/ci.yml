@@ -13,13 +13,13 @@ jobs:
 
     services:
       pgsql:
-        image: postgres:15
+        image: postgres:17
         env:
           POSTGRES_DB: raafco_ims_pgsql
           POSTGRES_USER: admin
           POSTGRES_PASSWORD: admin
         options: >-
-          --health-cmd "pg_isready -U admin"
+          --health-cmd "pg_isready -U admin -d raafco_ims_pgsql"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
@@ -35,32 +35,54 @@ jobs:
           extensions: pdo, pgsql, pdo_pgsql, bcmath, mbstring, tokenizer, intl, pcntl, zip
           coverage: none
 
-      - name: Install Composer dependencies
+      - name: Install Composer dependencies (via Makefile)
         working-directory: ./src
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+        run: make composer-install
 
-      - name: Copy .env.testing
+      - name: Copy .env.testing -> .env
         working-directory: ./src
         run: cp .env.testing .env
 
       - name: Generate app key
         working-directory: ./src
-        run: php artisan key:generate
+        run: php artisan key:generate --force
 
-      - name: Wait 5 seconds before migrations
-        working-directory: ./src
-        run: sleep 5
-
-      - name: Test Postgres connection
-        working-directory: ./src
+      - name: Wait for Postgres to be ready
         run: |
           export PGPASSWORD=admin
+          for i in $(seq 1 20); do
+            pg_isready -h pgsql -p 5432 -U admin && break
+            echo "Waiting for Postgres... ($i)"
+            sleep 1
+          done
           pg_isready -h pgsql -p 5432 -U admin
-          psql -h pgsql -U admin -d raafco_ims_pgsql -c '\dt'
 
-      - name: Run migrations
+      - name: Wait for Postgres readiness (max 60s)
         working-directory: ./src
-        run: php artisan migrate --force
+        run: |
+          for i in {1..30}; do
+            if pg_isready -h pgsql -U admin -d raafco_ims_pgsql; then
+              echo "Postgres is ready!"
+              exit 0
+            fi
+            echo "Waiting for Postgres... attempt $i"
+            sleep 2
+          done
+          echo "Postgres failed to become ready in time"
+          exit 1
+
+      - name: Test Postgres connection
+        run: |
+          export PGPASSWORD=admin
+          psql -h pgsql -U admin -d raafco_ims_pgsql -c '\dt' || (echo "Postgres connection failed" && exit 1)
+
+      - name: Run migrations (Makefile)
+        working-directory: ./src
+        run: make migrate ENV_FILE=.env.testing
+
+      - name: Clear caches (safety)
+        working-directory: ./src
+        run: make cache-clear
 
       - name: Run Pint (code style)
         working-directory: ./src
@@ -70,6 +92,6 @@ jobs:
         working-directory: ./src
         run: ./vendor/bin/phpstan analyse --memory-limit=2G
 
-      - name: Run tests
+      - name: Run tests (Makefile)
         working-directory: ./src
-        run: php artisan test
+        run: make test ENV_FILE=.env.testing

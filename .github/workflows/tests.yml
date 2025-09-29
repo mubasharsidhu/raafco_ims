@@ -105,7 +105,7 @@ jobs:
       - name: Install required CLI tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y postgresql-client iputils-ping netcat
+          sudo apt-get install -y postgresql-client iputils-ping netcat-openbsd
 
       - name: Ensure storage/cache permissions
         working-directory: ./src

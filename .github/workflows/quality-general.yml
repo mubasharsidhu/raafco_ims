@@ -1,0 +1,95 @@
+name: CI-Code—Quality
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  php-quality:
+    name: "PHP: style & static analysis"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: mbstring, bcmath, xml, curl, pdo_pgsql, zip, redis
+          ini-values: memory_limit=2G
+
+      - name: Cache Composer & vendor
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.composer/cache
+            ./src/vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('src/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies (including dev)
+        working-directory: ./src
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Composer validate
+        working-directory: ./src
+        run: composer validate --strict
+
+      - name: Run Pint (style) if installed
+        working-directory: ./src
+        run: |
+          if [ -x vendor/bin/pint ]; then
+            vendor/bin/pint --test --verbose
+          else
+            echo "Pint not installed — skipping."
+          fi
+
+      - name: Run PHPStan if configured
+        working-directory: ./src
+        run: |
+          if [ -x vendor/bin/phpstan ] && ( [ -f phpstan.neon ] || [ -f phpstan.neon.dist ] ); then
+            vendor/bin/phpstan analyse --memory-limit=2G --verbose
+          else
+            echo "PHPStan not configured — skipping."
+          fi
+
+  security-checks:
+    name: "Security: composer audit"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: ${{ runner.os }}-composer-${{ hashFiles('src/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies (no dev required)
+        working-directory: ./src
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Composer audit (if available)
+        working-directory: ./src
+        run: |
+          if composer audit --no-interaction >/dev/null 2>&1; then
+            composer audit --no-interaction || { echo "composer audit reported vulnerabilities"; exit 1; }
+          else
+            echo "composer audit unavailable — skipping. Consider adding a dedicated security scanner."
+          fi

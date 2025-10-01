@@ -60,8 +60,12 @@ jobs:
           cp .env.testing .env || (echo "Environment variables could not be copied" && exit 1)
 
           # Update host to 127.0.0.1 in Git env (Since it's been set to pgsql by service:pgsql)
-          echo "DB_HOST=$(grep -m1 '^DB_HOST=' .env | cut -d'=' -f2-)" >> $GITHUB_ENV
-          echo "DB_PORT=$(grep -m1 '^DB_PORT=' .env | cut -d'=' -f2-)" >> $GITHUB_ENV
+          while IFS= read -r line; do
+            # skip empty lines and comments
+            if [[ -n "$line" && ! "$line" =~ ^# ]]; then
+              echo "$line" >> $GITHUB_ENV
+            fi
+          done < .env
 
       - name: Install Composer dependencies
         working-directory: src

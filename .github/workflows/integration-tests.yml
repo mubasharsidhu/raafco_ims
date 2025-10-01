@@ -1,0 +1,120 @@
+name: CI—Integration-Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DB_HOST: 127.0.0.1
+
+jobs:
+  laravel-tests:
+    name: Laravel tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    strategy:
+      matrix:
+        php-version: ["8.3"]
+
+    services:
+      pgsql:
+        image: postgres:17
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: raafco_ims_pgsql
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
+        options: >-
+          --health-cmd "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"
+          --health-interval 5s
+          --health-timeout 2s
+          --health-retries 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: mbstring, pdo_pgsql
+          coverage: none
+
+      - name: Install system packages required for checks
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends postgresql-client
+
+      - name: Prepare .env for tests
+        working-directory: src
+        run: |
+          set -euo pipefail
+          cp .env.testing .env || (echo "Environment variables could not be copied" && exit 1)
+
+          # Update host to 127.0.0.1 in Git env (Since it's been set to pgsql by service:pgsql)
+          echo "DB_HOST=$(grep -m1 '^DB_HOST=' .env | cut -d'=' -f2-)" >> $GITHUB_ENV
+
+      - name: Install Composer dependencies
+        working-directory: src
+        run: |
+          composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Generate APP_KEY
+        working-directory: src
+        run: |
+          php artisan key:generate --force
+
+      - name: Ensure Postgres is reachable
+        run: |
+          set -euo pipefail
+          if pg_isready -h ${DB_HOST} -p "${DB_PORT}" -U ${DB_USERNAME} -d ${DB_DATABASE} >/dev/null 2>&1; then
+            echo "Postgres OK"
+          else
+            echo "Postgres failed to become ready" >&2
+            exit 1
+          fi
+
+      - name: Run migrations
+        working-directory: src
+        run: |
+          php artisan migrate:fresh
+          php artisan migrate --force
+
+      - name: Run integration tests
+        id: integration-tests
+        working-directory: src
+        run: |
+          LOG_FILE="storage/logs/tests/integration-${{ github.run_id }}.log"
+
+          # Ensure parent directories exist
+          mkdir -p "$(dirname "$LOG_FILE")"
+
+          echo "----- CI Run for Workflow: ${{ github.workflow }} -> ${{ github.ref }} @ $(date) -----" > "$LOG_FILE"
+
+          # Run Laravel tests (no parallel unless ParaTest installed)
+          set -o pipefail
+          php artisan test --without-tty 2>&1 | tee -a "$LOG_FILE"
+          echo "exit_code=${PIPESTATUS[0]}" >> $GITHUB_OUTPUT
+
+      - name: Upload test logs (always run)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-logs
+          path: src/storage/logs/tests/*.log
+          retention-days: 7
+
+      - name: Fail if tests failed
+        if: steps.integration-tests.outputs.exit_code != '0'
+        run: exit 1

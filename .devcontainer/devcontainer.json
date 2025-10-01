@@ -36,6 +36,7 @@
         "xdebug.php-debug",
         "junstyle.php-cs-fixer",
         "wongjn.php-sniffer",
+        "getpsalm.psalm-vscode-plugin",
 
         // Laravel Specific
         "onecentlin.laravel-blade",

@@ -10,9 +10,6 @@ concurrency:
   group: tests-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  DB_HOST: 127.0.0.1
-
 jobs:
   laravel-tests:
     name: Laravel tests
@@ -64,6 +61,7 @@ jobs:
 
           # Update host to 127.0.0.1 in Git env (Since it's been set to pgsql by service:pgsql)
           echo "DB_HOST=$(grep -m1 '^DB_HOST=' .env | cut -d'=' -f2-)" >> $GITHUB_ENV
+          echo "DB_PORT=$(grep -m1 '^DB_PORT=' .env | cut -d'=' -f2-)" >> $GITHUB_ENV
 
       - name: Install Composer dependencies
         working-directory: src

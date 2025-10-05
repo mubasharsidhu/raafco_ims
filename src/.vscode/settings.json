@@ -29,11 +29,11 @@
         "commands": [
             {
                 "match": "(?<!\\.blade)\\.php$",
-                "cmd": "php ./vendor/bin/pint ${file} >> .vscode/pint.log 2>&1"
+                "cmd": "php ./vendor/bin/pint ${file}"
             },
             {
                 "match": "\\.blade\\.php$",
-                "cmd": "npx blade-formatter -w ${file} >> .vscode/blade.log 2>&1"
+                "cmd": "npx blade-formatter -w ${file}"
             }
         ]
     },

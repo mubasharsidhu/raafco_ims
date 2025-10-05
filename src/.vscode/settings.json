@@ -1,0 +1,115 @@
+{
+    // --- Java Runtime for Sonar Lint ---
+    //"sonarlint.ls.javaHome": "/usr/lib/jvm/java-21-openjdk-arm64",
+    "sonarlint.analyzerProperties": {
+        "sonar.php.enabled": "true",
+        "sonar.javascript.enabled": "true",
+        "sonar.typescript.enabled": "true",
+        "sonar.cfamily.enabled": "false",
+        "sonar.java.enabled": "false",
+        "sonar.python.enabled": "false"
+    },
+
+    // --- PHP & Laravel ---
+    "php.validate.executablePath": "/usr/local/bin/php",
+    "intelephense.environment.phpVersion": "8.3",
+    "intelephense.files.maxSize": 5000000,
+    "intelephense.stubs": ["PDO", "pgsql"],
+    "editor.formatOnSave": true,
+
+    // --- psalm PHP code analysis ---
+    "psalm.psalmScriptPath": "./vendor/bin/psalm",
+
+    "[php]": {
+        "editor.defaultFormatter": null,
+        "editor.formatOnSave": false
+    },
+
+    "emeraldwalk.runonsave": {
+        "commands": [
+            {
+                "match": "(?<!\\.blade)\\.php$",
+                "cmd": "php ./vendor/bin/pint ${file} >> .vscode/pint.log 2>&1"
+            },
+            {
+                "match": "\\.blade\\.php$",
+                "cmd": "npx blade-formatter -w ${file} >> .vscode/blade.log 2>&1"
+            }
+        ]
+    },
+
+    // Laravel artisan integration
+    "laravel-artisan.showOutput": true,
+
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[vue]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[yaml]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+
+    // --- Tailwind & Frontend ---
+    "editor.quickSuggestions": { "strings": true },
+    "tailwindCSS.includeLanguages": {
+        "blade": "html",
+        "php": "html"
+    },
+
+    // --- Prettier & ESLint ---
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact",
+        "vue"
+    ],
+    "stylelint.validate": ["css", "scss", "less", "postcss"],
+
+    // --- Git ---
+    "git.confirmSync": false,
+    "git.autofetch": true,
+
+    // --- PostgreSQL (Database Client 2) ---
+    "database-client.connections": [
+        {
+            "name": "Postgres (Local Dev)",
+            "driver": "PostgreSQL",
+            "server": "pgsql", // service name from docker-compose
+            "port": 5432,
+            "username": "admin",
+            "password": "admin",
+            "database": "raafco_ims_pgsql"
+        }
+    ],
+
+    "files.exclude": {
+        "**/vendor": true,
+        "**/node_modules": true,
+        "**/storage/framework/cache": true,
+        "**/storage/logs": true,
+        "**/bootstrap/cache": true
+    },
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+    "files.autoSave": "onFocusChange",
+    "editor.renderWhitespace": "boundary",
+    "editor.minimap.enabled": true,
+    "editor.wordWrap": "on",
+    "cSpell.language": "en,en-US",
+    "editor.fontLigatures": false,
+
+    "workbench.colorCustomizations": {
+        "statusBar.noFolderBackground": "#673AB7"
+    }
+}

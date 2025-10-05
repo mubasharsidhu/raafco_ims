@@ -1,26 +1,30 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "raafco/ims",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Integrated Management System (IMS) built with Laravel 12, PostgreSQL, Redis, and Docker-based development setup.",
     "keywords": [
         "laravel",
-        "framework"
+        "framework",
+        "raafco",
+        "ims",
+        "postgresql",
+        "docker",
+        "redis",
+        "fullstack"
     ],
-    "license": "MIT",
+    "license": "proprietary",
     "require": {
-        "php": "^8.3",
-        "laravel/framework": "^12.0",
-        "laravel/tinker": "^2.10.1"
+        "php": "^8.3.26",
+        "laravel/framework": "^12.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.25",
-        "laravel/sail": "^1.41",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
-        "phpunit/phpunit": "^11.5.3",
+        "phpunit/phpunit": "^11.5",
         "psalm/plugin-laravel": "^3.0",
         "vimeo/psalm": "^6.13"
     },
@@ -75,7 +79,8 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
-        }
+        },
+        "platform": {}
     },
     "minimum-stability": "stable",
     "prefer-stable": true

@@ -34,8 +34,7 @@
         // PHP Development
         "bmewburn.vscode-intelephense-client",
         "xdebug.php-debug",
-        "junstyle.php-cs-fixer",
-        "wongjn.php-sniffer",
+        //"junstyle.php-cs-fixer",
         "getpsalm.psalm-vscode-plugin",
 
         // Laravel Specific
@@ -46,10 +45,9 @@
         "ryannaddy.laravel-artisan",
         "mehedidracula.php-namespace-resolver",
         "neilbrayfield.php-docblocker",
-        "shufo.vscode-blade-formatter",
         "stef-k.laravel-goto-controller",
         "austenc.laravel-blade-spacer",
-        "open-southeners.laravel-pint",
+        "emeraldwalk.RunOnSave",
 
         // Database & SQL
         "cweijan.vscode-database-client2",
@@ -81,6 +79,7 @@
         "sleistner.vscode-fileutils",
         "gruntfuggly.todo-tree",
         "ms-vscode.makefile-tools",
+        "vscode-icons-team.vscode-icons",
 
         //Quality
         "SonarSource.sonarlint-vscode"

@@ -7,19 +7,16 @@
   "workspaceFolder": "/var/www/html",
   "shutdownAction": "stopCompose",
 
-  // Mount your source code only (excluding vendor/node_modules)
-  "mounts": [
-    "source=${localWorkspaceFolder}/src,target=/var/www/html,type=bind,consistency=cached",
-    "source=vendor-cache,target=/var/www/html/vendor,type=volume",
-    "source=node-cache,target=/var/www/html/node_modules,type=volume",
-    "source=${localEnv:HOME}/.composer,target=/home/vscode/.composer,type=bind" // Composer cache mount
-  ],
+  "remoteEnv": {
+    "SONARLINT_EXCLUDE_ANALYZERS": "cfamily,java,python"
+  },
 
   "forwardPorts": [5173, 8081, 9003],
   "portsAttributes": {
     "8025": { "label": "mailpit", "onAutoForward": "ignore" },
     "5050": { "label": "pgadmin", "onAutoForward": "ignore" }
   },
+
   "postCreateCommand": "make setup",
 
   "features": {
@@ -28,37 +25,38 @@
     "ghcr.io/devcontainers/features/node:1": { "version": "22" }
   },
 
+  // Mount your source code only (excluding vendor/node_modules)
+  "mounts": [
+    "source=${localWorkspaceFolder}/.devcontainer/cache/sonarlint,target=/home/vscode/.sonarlint,type=bind",
+    "source=${localWorkspaceFolder}/src,target=/var/www/html,type=bind,consistency=cached",
+    "source=vendor-cache,target=/var/www/html/vendor,type=volume",
+    "source=node-cache,target=/var/www/html/node_modules,type=volume",
+    "source=${localEnv:HOME}/.composer,target=/home/vscode/.composer,type=bind" // Composer cache mount
+  ],
+
   "customizations": {
     "vscode": {
       "extensions": [
         // PHP Development
         "bmewburn.vscode-intelephense-client",
         "xdebug.php-debug",
-        //"junstyle.php-cs-fixer",
-        "getpsalm.psalm-vscode-plugin",
+
+        // PHP static code analysis
+        "SanderRonde.phpstan-vscode",
 
         // Laravel Specific
+        "laravel.vscode-laravel",
         "onecentlin.laravel-blade",
-        "onecentlin.laravel5-snippets",
         "amiralizadeh9480.laravel-extra-intellisense",
         "codingyu.laravel-goto-view",
         "ryannaddy.laravel-artisan",
-        "mehedidracula.php-namespace-resolver",
         "neilbrayfield.php-docblocker",
         "stef-k.laravel-goto-controller",
         "austenc.laravel-blade-spacer",
         "emeraldwalk.RunOnSave",
 
-        // Database & SQL
-        "cweijan.vscode-database-client2",
-        "mohammadaziz.vscode-pg-snippets",
-
-        // Docker & Containers
-        "ms-azuretools.vscode-docker",
-
         // Git
         "eamodio.gitlens",
-        "mhutchie.git-graph",
 
         // Frontend (if using)
         "esbenp.prettier-vscode",
@@ -75,10 +73,7 @@
         "editorconfig.editorconfig",
         "formulahendry.auto-rename-tag",
         "formulahendry.auto-close-tag",
-        "streetsidesoftware.code-spell-checker",
-        "sleistner.vscode-fileutils",
         "gruntfuggly.todo-tree",
-        "ms-vscode.makefile-tools",
         "vscode-icons-team.vscode-icons",
 
         //Quality

@@ -1,13 +1,9 @@
 {
     // --- Java Runtime for Sonar Lint ---
-    //"sonarlint.ls.javaHome": "/usr/lib/jvm/java-21-openjdk-arm64",
     "sonarlint.analyzerProperties": {
         "sonar.php.enabled": "true",
         "sonar.javascript.enabled": "true",
-        "sonar.typescript.enabled": "true",
-        "sonar.cfamily.enabled": "false",
-        "sonar.java.enabled": "false",
-        "sonar.python.enabled": "false"
+        "sonar.typescript.enabled": "true"
     },
 
     // --- PHP & Laravel ---
@@ -17,13 +13,14 @@
     "intelephense.stubs": ["PDO", "pgsql"],
     "editor.formatOnSave": true,
 
-    // --- psalm PHP code analysis ---
-    "psalm.psalmScriptPath": "./vendor/bin/psalm",
-
     "[php]": {
         "editor.defaultFormatter": null,
         "editor.formatOnSave": false
     },
+
+    "phpstan.memoryLimit": "2G",
+    "phpstan.showTypeOnHover": true,
+    //"phpstan.options": ["--error-format=table", "-v"],
 
     "emeraldwalk.runonsave": {
         "commands": [
@@ -37,9 +34,6 @@
             }
         ]
     },
-
-    // Laravel artisan integration
-    "laravel-artisan.showOutput": true,
 
     "[javascript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -79,19 +73,6 @@
     "git.confirmSync": false,
     "git.autofetch": true,
 
-    // --- PostgreSQL (Database Client 2) ---
-    "database-client.connections": [
-        {
-            "name": "Postgres (Local Dev)",
-            "driver": "PostgreSQL",
-            "server": "pgsql", // service name from docker-compose
-            "port": 5432,
-            "username": "admin",
-            "password": "admin",
-            "database": "raafco_ims_pgsql"
-        }
-    ],
-
     "files.exclude": {
         "**/vendor": true,
         "**/node_modules": true,
@@ -110,6 +91,6 @@
     "editor.fontLigatures": false,
 
     "workbench.colorCustomizations": {
-        "statusBar.noFolderBackground": "#673AB7"
+      "statusBar.noFolderBackground": "#673AB7"
     }
 }

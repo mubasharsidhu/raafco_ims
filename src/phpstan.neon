@@ -1,0 +1,23 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - vendor/nesbot/carbon/extension.neon
+
+parameters:
+
+    paths:
+        - app
+        - routes
+        - database
+        - tests
+        - config
+
+    excludePaths:
+        - vendor
+        - node_modules
+        - storage
+        - bootstrap/cache
+        - public
+        - resources
+        - database/migrations
+
+    level: 9

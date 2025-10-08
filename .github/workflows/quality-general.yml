@@ -55,7 +55,7 @@ jobs:
       - name: Run PHPStan if configured
         working-directory: ./src
         run: |
-          if [ -x vendor/bin/phpstan ] && ( [ -f phpstan.neon ] || [ -f phpstan.neon.dist ] ); then
+          if [ -x vendor/bin/phpstan ] && [ -f phpstan.neon ]; then
             vendor/bin/phpstan analyse --memory-limit=2G --verbose
           else
             echo "PHPStan not configured — skipping."

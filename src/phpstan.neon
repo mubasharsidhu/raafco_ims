@@ -12,12 +12,12 @@ parameters:
         - config
 
     excludePaths:
-        - vendor
-        - node_modules
-        - storage
-        - bootstrap/cache
-        - public
-        - resources
-        - database/migrations
+        - vendor (?)
+        - node_modules (?)
+        - storage (?)
+        - bootstrap/cache (?)
+        - public (?)
+        - resources (?)
+        - database/migrations (?)
 
     level: 9

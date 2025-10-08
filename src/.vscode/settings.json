@@ -11,30 +11,23 @@
     "intelephense.environment.phpVersion": "8.3",
     "intelephense.files.maxSize": 5000000,
     "intelephense.stubs": ["PDO", "pgsql"],
-    "editor.formatOnSave": true,
+    "intelephense.environment.includePaths": [
+        "${workspaceFolder}/vendor",
+        "${workspaceFolder}/app",
+        "${workspaceFolder}/bootstrap",
+        "${workspaceFolder}/config",
+        "vendor/laravel/framework/src/Illuminate"
+    ],
 
-    "[php]": {
-        "editor.defaultFormatter": null,
-        "editor.formatOnSave": false
-    },
+    "intelephense.files.associations": ["*.php", "*.blade.php"],
+    "intelephense.files.exclude": ["**/node_modules/**", "**/vendor/**"],
 
     "phpstan.memoryLimit": "2G",
     "phpstan.showTypeOnHover": true,
-    //"phpstan.options": ["--error-format=table", "-v"],
 
-    "emeraldwalk.runonsave": {
-        "commands": [
-            {
-                "match": "(?<!\\.blade)\\.php$",
-                "cmd": "php ./vendor/bin/pint ${file}"
-            },
-            {
-                "match": "\\.blade\\.php$",
-                "cmd": "npx blade-formatter -w ${file}"
-            }
-        ]
+    "[php]": {
+        "editor.defaultFormatter": "open-southeners.laravel-pint"
     },
-
     "[javascript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
@@ -83,14 +76,13 @@
     "editor.tabSize": 2,
     "editor.insertSpaces": true,
     "editor.detectIndentation": false,
-    "files.autoSave": "onFocusChange",
     "editor.renderWhitespace": "boundary",
     "editor.minimap.enabled": true,
     "editor.wordWrap": "on",
-    "cSpell.language": "en,en-US",
     "editor.fontLigatures": false,
+    "editor.formatOnSave": true,
 
     "workbench.colorCustomizations": {
-      "statusBar.noFolderBackground": "#673AB7"
+        "statusBar.noFolderBackground": "#673AB7"
     }
 }

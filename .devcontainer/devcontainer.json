@@ -46,13 +46,15 @@
 
         // Laravel Specific
         "laravel.vscode-laravel",
-        "onecentlin.laravel-blade",
+        "georgykurian.laravel-ide-helper",
+        "open-southeners.laravel-pint",
         "amiralizadeh9480.laravel-extra-intellisense",
+        "onecentlin.laravel-blade",
+        "austenc.laravel-blade-spacer",
         "codingyu.laravel-goto-view",
         "ryannaddy.laravel-artisan",
         "neilbrayfield.php-docblocker",
         "stef-k.laravel-goto-controller",
-        "austenc.laravel-blade-spacer",
         "emeraldwalk.RunOnSave",
 
         // Git

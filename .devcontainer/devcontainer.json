@@ -8,7 +8,8 @@
   "shutdownAction": "stopCompose",
 
   "remoteEnv": {
-    "SONARLINT_EXCLUDE_ANALYZERS": "cfamily,java,python"
+    "SONARLINT_EXCLUDE_ANALYZERS": "cfamily,java,python",
+    "SONAR_SCANNER_OPTS": "-Dsonar.userHome=/home/vscode/.sonarlint"
   },
 
   "forwardPorts": [5173, 8081, 9003],

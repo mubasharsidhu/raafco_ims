@@ -12,15 +12,20 @@
     "intelephense.files.maxSize": 5000000,
     "intelephense.stubs": ["PDO", "pgsql"],
     "intelephense.environment.includePaths": [
-        "${workspaceFolder}/vendor",
         "${workspaceFolder}/app",
         "${workspaceFolder}/bootstrap",
         "${workspaceFolder}/config",
+        "${workspaceFolder}/database",
+        "${workspaceFolder}/vendor",
         "vendor/laravel/framework/src/Illuminate"
     ],
 
     "intelephense.files.associations": ["*.php", "*.blade.php"],
-    "intelephense.files.exclude": ["**/node_modules/**", "**/vendor/**"],
+    "intelephense.files.exclude": [
+        "**/node_modules/**",
+        "**/vendor/**",
+        "**/storage/framework/**"
+    ],
 
     "phpstan.memoryLimit": "2G",
     "phpstan.showTypeOnHover": true,

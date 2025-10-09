@@ -1,0 +1,37 @@
+name: 🛡️ Enforce Branch Rules
+
+on:
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  enforce-branch-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🧠 Check PR source and target
+        run: |
+          echo "🔍 Target branch: ${{ github.base_ref }}"
+          echo "🔍 Source branch: ${{ github.head_ref }}"
+
+          BASE="${{ github.base_ref }}"
+          HEAD="${{ github.head_ref }}"
+
+          # Rule 1 — Only dev can merge into main
+          if [[ "$BASE" == "main" && "$HEAD" != "dev" ]]; then
+            echo "❌ Only PRs from 'dev' are allowed to merge into 'main'."
+            exit 1
+          fi
+
+          # Rule 2 — Only feature/* can merge into dev
+          if [[ "$BASE" == "dev" && ! "$HEAD" =~ ^feature/ ]]; then
+            echo "❌ Only 'feature/*' branches can merge into 'dev'."
+            exit 1
+          fi
+
+          echo "✅ Branch merge allowed: $HEAD → $BASE"
+
+      - name: 🚫 Prevent direct commits via GitHub UI
+        if: github.event_name == 'push'
+        run: |
+          echo "❌ Direct commits via web or CLI are not allowed on protected branches."
+          exit 1

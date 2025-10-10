@@ -1,87 +1,82 @@
 {
-  "name": "raafco-ims-dev",
-  "dockerComposeFile": ["../docker-compose.yml", "docker-compose.override.yml"],
-  "service": "app",
-  "remoteUser": "vscode",
-  "containerUser": "vscode",
-  "workspaceFolder": "/var/www/html",
-  "shutdownAction": "stopCompose",
+    "name": "raafco-ims-dev",
+    "dockerComposeFile": [
+        "../docker-compose.yml",
+        "docker-compose.override.yml"
+    ],
+    "service": "app",
+    "remoteUser": "vscode",
+    "containerUser": "vscode",
+    "workspaceFolder": "/var/www/html",
+    "shutdownAction": "stopCompose",
 
-  "remoteEnv": {
-    "SONARLINT_EXCLUDE_ANALYZERS": "cfamily,java,python",
-    "SONAR_SCANNER_OPTS": "-Dsonar.userHome=/home/vscode/.sonarlint"
-  },
+    "remoteEnv": {
+        "SONARLINT_EXCLUDE_ANALYZERS": "cfamily,java,python",
+        "SONAR_SCANNER_OPTS": "-Dsonar.userHome=/home/vscode/.sonarlint"
+    },
 
-  "forwardPorts": [5173, 8081, 9003],
-  "portsAttributes": {
-    "8025": { "label": "mailpit", "onAutoForward": "ignore" },
-    "5050": { "label": "pgadmin", "onAutoForward": "ignore" }
-  },
+    "forwardPorts": [5173, 8081, 9003],
+    "portsAttributes": {
+        "8025": { "label": "mailpit", "onAutoForward": "ignore" },
+        "5050": { "label": "pgadmin", "onAutoForward": "ignore" }
+    },
 
-  "postCreateCommand": "make setup",
+    "postCreateCommand": "cd ./src && make setup",
 
-  "features": {
-    "ghcr.io/devcontainers/features/common-utils:2": {},
-    "ghcr.io/devcontainers/features/git:1": {},
-    "ghcr.io/devcontainers/features/node:1": { "version": "22" }
-  },
+    "features": {
+        "ghcr.io/devcontainers/features/common-utils:2": {},
+        "ghcr.io/devcontainers/features/git:1": {},
+        "ghcr.io/devcontainers/features/node:1": { "version": "22" }
+    },
 
-  // Mount your source code only (excluding vendor/node_modules)
-  "mounts": [
-    "source=${localWorkspaceFolder}/.devcontainer/cache/sonarlint,target=/home/vscode/.sonarlint,type=bind",
-    "source=${localWorkspaceFolder}/src,target=/var/www/html,type=bind,consistency=cached",
-    "source=vendor-cache,target=/var/www/html/vendor,type=volume",
-    "source=node-cache,target=/var/www/html/node_modules,type=volume",
-    "source=${localEnv:HOME}/.composer,target=/home/vscode/.composer,type=bind" // Composer cache mount
-  ],
+    "mounts": [
+        "source=${localWorkspaceFolder}/.devcontainer/cache/sonarlint,target=/home/vscode/.sonarlint,type=bind",
+        "source=${localWorkspaceFolder}/src,target=/var/www/html/src,type=bind,consistency=cached",
+        "source=vendor-cache,target=/var/www/html/src/vendor,type=volume",
+        "source=node-cache,target=/var/www/html/src/node_modules,type=volume",
+        "source=${localEnv:HOME}/.composer,target=/home/vscode/.composer,type=bind"
+    ],
 
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        // PHP Development
-        "bmewburn.vscode-intelephense-client",
-        "xdebug.php-debug",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "bmewburn.vscode-intelephense-client",
+                "xdebug.php-debug",
 
-        // PHP static code analysis
-        "SanderRonde.phpstan-vscode",
+                "SanderRonde.phpstan-vscode",
 
-        // Laravel Specific
-        "laravel.vscode-laravel",
-        "georgykurian.laravel-ide-helper",
-        "open-southeners.laravel-pint",
-        "amiralizadeh9480.laravel-extra-intellisense",
-        "onecentlin.laravel-blade",
-        "austenc.laravel-blade-spacer",
-        "codingyu.laravel-goto-view",
-        "ryannaddy.laravel-artisan",
-        "neilbrayfield.php-docblocker",
-        "stef-k.laravel-goto-controller",
-        "emeraldwalk.RunOnSave",
+                "laravel.vscode-laravel",
+                "georgykurian.laravel-ide-helper",
+                "open-southeners.laravel-pint",
+                "amiralizadeh9480.laravel-extra-intellisense",
+                "onecentlin.laravel-blade",
+                "austenc.laravel-blade-spacer",
+                "codingyu.laravel-goto-view",
+                "ryannaddy.laravel-artisan",
+                "neilbrayfield.php-docblocker",
+                "stef-k.laravel-goto-controller",
+                "emeraldwalk.RunOnSave",
 
-        // Git
-        "eamodio.gitlens",
+                "eamodio.gitlens",
+                "github.vscode-github-actions",
 
-        // Frontend (if using)
-        "esbenp.prettier-vscode",
-        "dbaeumer.vscode-eslint",
-        "ecmel.vscode-html-css",
-        "stylelint.vscode-stylelint",
-        "bradlc.vscode-tailwindcss",
+                "esbenp.prettier-vscode",
+                "dbaeumer.vscode-eslint",
+                "ecmel.vscode-html-css",
+                "stylelint.vscode-stylelint",
+                "bradlc.vscode-tailwindcss",
 
-        // Environment & Config
-        "mikestead.dotenv",
-        "redhat.vscode-yaml",
+                "mikestead.dotenv",
+                "redhat.vscode-yaml",
 
-        // Utilities
-        "editorconfig.editorconfig",
-        "formulahendry.auto-rename-tag",
-        "formulahendry.auto-close-tag",
-        "gruntfuggly.todo-tree",
-        "vscode-icons-team.vscode-icons",
+                "editorconfig.editorconfig",
+                "formulahendry.auto-rename-tag",
+                "formulahendry.auto-close-tag",
+                "gruntfuggly.todo-tree",
+                "vscode-icons-team.vscode-icons",
 
-        //Quality
-        "SonarSource.sonarlint-vscode"
-      ]
+                "SonarSource.sonarlint-vscode"
+            ]
+        }
     }
-  }
 }

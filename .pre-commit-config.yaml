@@ -1,0 +1,98 @@
+---
+# 👮 Global Pre-commit Configuration
+# This file enforces coding standards, security checks, and Git hygiene.
+# To install hooks locally:
+#   1. pip install pre-commit
+#   2. pre-commit install
+#   3. pre-commit install --hook-type pre-push  # for push hooks too
+#   4. pre-commit autoupdate                    # to update hook versions
+
+repos:
+  # 🛡️ GIT PROTECTION & HYGIENE
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: no-commit-to-branch
+        name: 🛡️ Prevent direct commits to main or dev
+        stages: [pre-commit, pre-push]
+        args:
+          # 🔐 Explicit branches
+          - --branch
+          - main
+          - --branch
+          - dev
+          - --branch
+          - production
+
+          # 🌿 Pattern-based protection (regex)
+          - --pattern
+          - release/.*
+          - --pattern
+          - hotfix/.*
+
+      - id: check-merge-conflict # 🧭 Prevent unresolved merge conflicts
+
+      - id: trailing-whitespace # 🧹 Remove trailing spaces automatically
+
+      - id: end-of-file-fixer # 📄 Ensure a single newline at EOF
+
+      - id: check-yaml # 🧾 Validate YAML syntax (e.g., GitHub workflows, config files)
+
+      - id: check-json # 🪄 Validate JSON syntax (composer.lock, package.json, etc.)
+
+      - id: check-added-large-files # 🚫 Block committing large files accidentally
+        args: ["--maxkb=1000"]
+
+      - id: detect-private-key # 🔑 Prevent committing SSH/private keys
+
+      - id: forbid-submodules # 🚷 Avoid adding Git submodules
+
+      - id: check-case-conflict # 🧱 Prevent case conflicts between file names
+
+      - id: check-symlinks # 🔗 Detect broken symlinks
+
+  # 🧪 Laravel Tests (via generic command)
+  - repo: local
+    hooks:
+      - id: composer-validate
+        name: "🧾 Composer Validate"
+        entry: bash -c "cd src && composer validate --strict"
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: composer-audit
+        name: "🛡️ Composer Audit (Security Check)"
+        entry: bash -c "cd src && composer audit --no-interaction || (echo '❌ Vulnerabilities found!' && exit 1)"
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: pint
+        name: "🎨 Laravel Pint (Code Style)"
+        entry: bash -c "cd src && vendor/bin/pint --test --ansi || (echo '❌ Vulnerabilities found!' && exit 1)"
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: phpstan
+        name: "🧠 PHPStan (Static Analysis)"
+        entry: bash -c "cd src && vendor/bin/phpstan analyse --memory-limit=2G --no-progress"
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+      - id: laravel-tests
+        name: "🧪 Laravel Tests"
+        entry: bash -c "cd src && php artisan test"
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+
+  # ✅ Detect secrets before commit
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        stages: [pre-commit]
+        args: ["--exclude-files", "src/.env.testing"]

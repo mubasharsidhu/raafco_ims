@@ -28,7 +28,7 @@ jobs:
         env:
           POSTGRES_DB: raafco_ims_pgsql
           POSTGRES_USER: admin
-          POSTGRES_PASSWORD: admin
+          POSTGRES_PASSWORD: admin # pragma: allowlist secret
         options: >-
           --health-cmd "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"
           --health-interval 5s

@@ -2,6 +2,7 @@ name: 🛡️ Enforce Branch Rules
 
 on:
   pull_request:
+    types: [labeled, unlabeled, opened, synchronize, reopened, edited]
     branches: [main, dev]
 
 jobs:
@@ -23,7 +24,7 @@ jobs:
           fi
 
           # Rule 2 — Only feature/* can merge into dev
-          if [[ "$BASE" == "dev" && ! "$HEAD" =~ ^feature/ ]]; then
+          if [[ "$BASE" == "dev" && ! "$HEAD" =~ ^feature/ && ! "$HEAD" =~ ^chore/ ]]; then
             echo "❌ Only 'feature/*' branches can merge into 'dev'."
             exit 1
           fi

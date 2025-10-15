@@ -59,6 +59,7 @@
 
                 "eamodio.gitlens",
                 "github.vscode-github-actions",
+                "atlassian.atlascode",
 
                 "esbenp.prettier-vscode",
                 "dbaeumer.vscode-eslint",

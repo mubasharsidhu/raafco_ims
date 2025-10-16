@@ -6,6 +6,7 @@
 ENV_FILE ?= .env
 PHP_ART = php artisan --env=$(shell basename $(ENV_FILE) | sed 's/.env//; s/\.//g')
 INIT_FILE = /var/www/html/.initialized
+LARAVEL_PATH=./src
 
 
 # ======================
@@ -101,6 +102,24 @@ force-env:
 	cp .env.example .env && echo "♻️  .env recreated from example"
 	$(PHP_ART) key:generate --ansi --force
 
+# ======================
+# 🧩 Install pre-commit and hooks
+# ======================
+
+install-pre-commit-hooks:
+	@echo "🔧 Installing pre-commit hooks..."
+	pre-commit install --install-hooks
+	@echo "✅ Pre-commit hooks installed."
+
+# 🧱 Run or reinstall pre-commit hooks
+refresh-install-pre-commit-hooks:
+	pre-commit uninstall
+	pre-commit install --install-hooks
+	@echo "🔁 Hooks reinstalled."
+
+run-pre-commit:
+	pre-commit run --all-files
+
 
 # ======================
 # Project Setup
@@ -116,7 +135,7 @@ init:
 		echo "✅ Init already done. Skipping."; \
 	fi
 
-setup: composer-install init npm-install npm-build
+setup: composer-install init npm-install npm-build install-pre-commit-hooks
 	@echo "✅ Project setup complete! Ready to code 🚀"
 
 

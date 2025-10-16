@@ -131,6 +131,6 @@ jobs:
     steps:
       - name: 🚫 Block direct commits
         run: |
-          echo "❌ Direct commits to protected branches are not allowed."
-          echo "✅ Please open a Pull Request instead."
+          echo "❌ Direct commits to protected branches are not allowed.
+                ✅ Please open a Pull Request instead."
           exit 1

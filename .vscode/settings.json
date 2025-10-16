@@ -1,23 +1,22 @@
 {
-    // --- Java Runtime for Sonar Lint ---
     "sonarlint.analyzerProperties": {
         "sonar.php.enabled": "true",
         "sonar.javascript.enabled": "true",
         "sonar.typescript.enabled": "true"
     },
 
-    // --- PHP & Laravel ---
     "php.validate.executablePath": "/usr/local/bin/php",
+    "intelephense.format.enable": false,
     "intelephense.environment.phpVersion": "8.3",
     "intelephense.files.maxSize": 5000000,
     "intelephense.stubs": ["PDO", "pgsql"],
     "intelephense.environment.includePaths": [
-        "${workspaceFolder}/app",
-        "${workspaceFolder}/bootstrap",
-        "${workspaceFolder}/config",
-        "${workspaceFolder}/database",
-        "${workspaceFolder}/vendor",
-        "vendor/laravel/framework/src/Illuminate"
+        "${workspaceFolder}/src/app",
+        "${workspaceFolder}/src/bootstrap",
+        "${workspaceFolder}/src/config",
+        "${workspaceFolder}/src/database",
+        "${workspaceFolder}/src/vendor",
+        "${workspaceFolder}/src/vendor/laravel/framework/src/Illuminate"
     ],
 
     "intelephense.files.associations": ["*.php", "*.blade.php"],
@@ -49,14 +48,12 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
 
-    // --- Tailwind & Frontend ---
     "editor.quickSuggestions": { "strings": true },
     "tailwindCSS.includeLanguages": {
         "blade": "html",
         "php": "html"
     },
 
-    // --- Prettier & ESLint ---
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "eslint.validate": [
         "javascript",
@@ -67,7 +64,6 @@
     ],
     "stylelint.validate": ["css", "scss", "less", "postcss"],
 
-    // --- Git ---
     "git.confirmSync": false,
     "git.autofetch": true,
 

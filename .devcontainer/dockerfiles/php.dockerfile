@@ -3,17 +3,18 @@ FROM php:8.3-fpm
 
 RUN apt-get update && apt-get install -y \
     bash \
-    sudo \
     ca-certificates \
-    gnupg \
-    openssh-client \
-    procps \
-    libpq-dev \
     curl \
-    zip \
-    openjdk-21-jre-headless \
-    zlib1g-dev \
+    gnupg \
+    libpq-dev \
     libzip-dev \
+    openjdk-21-jre-headless \
+    openssh-client \
+    pipx \
+    procps \
+    sudo \
+    zip \
+    zlib1g-dev \
     \
 && docker-php-ext-install \
     pdo \
@@ -33,20 +34,21 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 RUN pecl install xdebug \
     && docker-php-ext-enable xdebug \
-    && rm -rf /tmp/pear
-COPY config/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
-
-RUN useradd -ms /bin/bash vscode \
-    && echo "vscode ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-
-RUN mkdir -p /home/www-data \
+    && rm -rf /tmp/pear \
+    && useradd -ms /bin/bash vscode \
+    && echo "vscode ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
+    && mkdir -p /home/www-data \
     && chown -R www-data:www-data /home/www-data \
     && usermod -d /home/www-data www-data \
-    && chsh -s /bin/bash www-data
-
-RUN mkdir -p /var/www/html/vendor /var/www/html/node_modules \
+    && chsh -s /bin/bash www-data \
+    && mkdir -p /var/www/html/vendor /var/www/html/node_modules \
     && chown -R vscode:vscode /var/www/html
 
+COPY config/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+
 USER vscode
+
+RUN pipx install pre-commit==4.3.0 \
+    && rm -rf /home/vscode/.cache/pipx
 
 WORKDIR /var/www/html

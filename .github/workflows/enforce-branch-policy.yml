@@ -2,19 +2,106 @@ name: 🛡️ Enforce Branch Rules
 
 on:
   pull_request:
+    types: [labeled, unlabeled, opened, synchronize, reopened, edited]
     branches: [main, dev]
+  create:
+
+permissions:
+  contents: write # needed to delete branches if invalid
+  pull-requests: read
+
+concurrency:
+  group: branch-policy-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  enforce-branch-policy:
+  # ============================================
+  # 1- Enforce Branch Naming Convention (on create)
+  # ============================================
+  enforce-branch-naming:
+    if: github.event_name == 'create' && github.ref_type == 'branch'
+    name: 🧭 Validate Branch Naming Convention
     runs-on: ubuntu-latest
     steps:
-      - name: 🧠 Check PR source and target
+      - name: 🧠 Check branch naming convention
         run: |
-          echo "🔍 Target branch: ${{ github.base_ref }}"
-          echo "🔍 Source branch: ${{ github.head_ref }}"
+          NEW_BRANCH="${{ github.ref_name }}"
+          echo "🔍 Checking branch name: $NEW_BRANCH"
 
+          PATTERN='^(feature|chore|bugfix|hotfix)\/[A-Za-z]+-[0-9]+-[a-z0-9-]+$'
+          if ! [[ "$NEW_BRANCH" =~ $PATTERN ]]; then
+            echo "❌ Invalid branch name: '$NEW_BRANCH'
+                  ✅ Expected format: feature|chore|bugfix|hotfix/JIRAID-something
+                  💡 Example: feature/IMS-123-add-login-page"
+
+            git push origin --delete "$NEW_BRANCH"
+
+            echo "🧹 Deleted invalid branch '$NEW_BRANCH' from origin."
+
+            exit 1
+          fi
+
+          echo "✅ Branch name follows the required convention."
+
+  # ============================================
+  # 2- Enforce Branch Base = dev (on branch create)
+  # ============================================
+  enforce-base-branch:
+    if: github.event_name == 'create' && github.ref_type == 'branch'
+    name: 🧭 Enforce Dev as Base Branch
+    runs-on: ubuntu-latest
+    needs: enforce-branch-naming
+    steps:
+      - name: 🧭 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🧠 Verify new branch base commit
+        run: |
+          NEW_BRANCH="${{ github.ref_name }}"
+          echo "🆕 New branch detected: $NEW_BRANCH"
+
+          # 🛑 Prevent accidental deletion of critical branches
+          if [[ "$NEW_BRANCH" == "main" || "$NEW_BRANCH" == "dev" ]]; then
+            echo "✅ '$NEW_BRANCH' is a protected branch. Skipping base validation."
+            exit 0
+          fi
+
+          BASE_COMMIT=$(git rev-parse origin/dev)
+          NEW_BRANCH_COMMIT=$(git ls-remote origin "$NEW_BRANCH" | awk '{print $1}')
+
+          echo "🔸 Dev base commit: $BASE_COMMIT
+                🔸 New branch commit: $NEW_BRANCH_COMMIT"
+
+          if [ "$BASE_COMMIT" != "$NEW_BRANCH_COMMIT" ]; then
+            echo "❌ Branch '$NEW_BRANCH' was NOT created from 'dev'.
+                  💡 Please recreate the branch from 'dev':"
+            echo "git checkout dev && git pull && git checkout -b $NEW_BRANCH"
+
+            git push origin --delete "$NEW_BRANCH"
+
+            echo "🧹 Deleted branch '$NEW_BRANCH' from origin."
+            exit 1
+          else
+            echo "✅ Branch '$NEW_BRANCH' is correctly based on 'dev'."
+          fi
+
+  # ============================================
+  # 3- Enforce PR Source/Target Policy
+  # ============================================
+  enforce-branch-policy:
+    if: github.event_name == 'pull_request'
+    name: 🧭 Enforce PR Source and Target
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🧠 Validate PR source and target
+        run: |
           BASE="${{ github.base_ref }}"
           HEAD="${{ github.head_ref }}"
+
+          echo "🔍 Target branch: $BASE"
+          echo "🔍 Source branch: $HEAD"
 
           # Rule 1 — Only dev can merge into main
           if [[ "$BASE" == "main" && "$HEAD" != "dev" ]]; then
@@ -22,16 +109,28 @@ jobs:
             exit 1
           fi
 
-          # Rule 2 — Only feature/* can merge into dev
-          if [[ "$BASE" == "dev" && ! "$HEAD" =~ ^feature/ ]]; then
-            echo "❌ Only 'feature/*' branches can merge into 'dev'."
+          # Rule 2 —   Only feature/*, chore/*, bugfix/*, hotfix/* can merge into dev
+          if [[ "$BASE" == "dev" ]] && \
+            [[ ! "$HEAD" =~ ^feature/ ]] && \
+            [[ ! "$HEAD" =~ ^chore/ ]] && \
+            [[ ! "$HEAD" =~ ^bugfix/ ]] && \
+            [[ ! "$HEAD" =~ ^hotfix/ ]]; then
+              echo "❌ Only 'feature/*', 'chore/*', 'bugfix/*', or 'hotfix/*' branches can merge into 'dev'."
             exit 1
           fi
 
           echo "✅ Branch merge allowed: $HEAD → $BASE"
 
-      - name: 🚫 Prevent direct commits via GitHub UI
-        if: github.event_name == 'push'
+  # ============================================
+  # 4- Prevent Direct Commits on Protected Branches
+  # ============================================
+  prevent-direct-commits:
+    if: github.event_name == 'push'
+    name: 🚫 Prevent Direct Commits via GitHub UI
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚫 Block direct commits
         run: |
-          echo "❌ Direct commits via web or CLI are not allowed on protected branches."
+          echo "❌ Direct commits to protected branches are not allowed.
+                ✅ Please open a Pull Request instead."
           exit 1

@@ -84,6 +84,6 @@
     "editor.formatOnSave": true,
 
     "workbench.colorCustomizations": {
-        "statusBar.noFolderBackground": "#673AB7"
+      "statusBar.noFolderBackground": "#673AB7"
     }
 }

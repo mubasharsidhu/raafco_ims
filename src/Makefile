@@ -109,12 +109,14 @@ force-env:
 install-pre-commit-hooks:
 	@echo "🔧 Installing pre-commit hooks..."
 	pre-commit install --install-hooks
+	pre-commit install --hook-type commit-msg
 	@echo "✅ Pre-commit hooks installed."
 
 # 🧱 Run or reinstall pre-commit hooks
 refresh-install-pre-commit-hooks:
 	pre-commit uninstall
 	pre-commit install --install-hooks
+	pre-commit install --hook-type commit-msg
 	@echo "🔁 Hooks reinstalled."
 
 run-pre-commit:

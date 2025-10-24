@@ -10,7 +10,7 @@ export default {
                     if (!jiraTicket || "" == jiraTicket) {
                         return [
                             false,
-                            "Jira Ticket not fount in you Git Branch name (e.g. feat(IMS-123): message)",
+                            "Jira Ticket not found in you Git Branch name (e.g. feat(IMS-123): message)",
                         ];
                     }
 

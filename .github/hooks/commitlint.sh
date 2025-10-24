@@ -4,9 +4,6 @@ set -euo pipefail
 # Ensure script runs from repo root (important for npx + pre-commit)
 cd "$(git rev-parse --show-toplevel)"
 
-# Detect if running in CI (skip prompts)
-IS_CI="${CI:-false}"
-
 COMMIT_MSG_FILE="$1"
 BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
 
@@ -33,26 +30,18 @@ else
         NEW_COMMIT_MSG="${TYPE}(${JIRA_TICKET}): ${COMMIT_MSG}"
 
         echo ""
-        echo "Auto prefixed your commit with '${TYPE}(${JIRA_TICKET}):' "
-        echo "(If it's not right, prefix type and jira ticket, and then commit. e.g. 'feat(IMS-123):')"
+        echo "Auto prefixing commit message with: '${TYPE}(${JIRA_TICKET}):' "
+        echo ""
+
+        echo "$NEW_COMMIT_MSG" > "$COMMIT_MSG_FILE"
+        echo "✨ Auto-prefixed."
+
         echo ""
         echo "-------------------------------------------"
         echo "$NEW_COMMIT_MSG"
         echo "-------------------------------------------"
         echo ""
 
-         # Ask confirmation unless in CI
-        if [[ "$IS_CI" != "true" ]]; then
-            read -rp "👉 Proceed with this message? [Y/n]: " CONFIRM
-            CONFIRM=${CONFIRM:-Y}
-            if [[ "$CONFIRM" =~ ^[Nn]$ ]]; then
-                echo "❌ Commit aborted by user."
-                exit 1
-            fi
-        fi
-
-        echo "$NEW_COMMIT_MSG" > "$COMMIT_MSG_FILE"
-        echo "✨ Auto-prefixed commit message with: ${TYPE}(${JIRA_TICKET})"
     else
         echo "⚠️ Missing type or JIRA ticket in branch name as well as from commit message."
         exit 1

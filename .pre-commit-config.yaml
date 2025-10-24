@@ -68,6 +68,12 @@ repos:
         pass_filenames: false
         stages: [pre-commit]
 
+      - id: commitlint
+        name: Conventional Commit Lint
+        entry: .github/hooks/commitlint.sh
+        language: system
+        stages: [commit-msg]
+
       - id: pint
         name: "🎨 Laravel Pint (Code Style)"
         entry: bash -c "cd src && vendor/bin/pint --test --ansi || (echo '❌ Vulnerabilities found!' && exit 1)"

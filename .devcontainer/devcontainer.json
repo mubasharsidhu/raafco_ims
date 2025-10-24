@@ -21,7 +21,7 @@
         "5050": { "label": "pgadmin", "onAutoForward": "ignore" }
     },
 
-    "postCreateCommand": "cd ./src && make setup",
+    "postCreateCommand": "npm ci || npm install && cd ./src && make setup",
 
     "features": {
         "ghcr.io/devcontainers/features/common-utils:2": {},

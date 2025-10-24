@@ -1,0 +1,24 @@
+{
+    "name": "html",
+    "version": "1.0.0",
+    "description": "A modern, containerized, Laravel-based SaaS app to manage inventory & invoicing.",
+    "type": "module",
+    "main": "index.js",
+    "devDependencies": {
+        "@commitlint/cli": "^20.1.0",
+        "@commitlint/config-conventional": "^20.0.0",
+        "@commitlint/rules": "^20.0.0"
+    },
+    "scripts": {},
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/mubasharsidhu/raafco_ims.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/mubasharsidhu/raafco_ims/issues"
+    },
+    "homepage": "https://github.com/mubasharsidhu/raafco_ims#readme"
+}

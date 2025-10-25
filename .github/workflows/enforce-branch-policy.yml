@@ -28,11 +28,11 @@ jobs:
           NEW_BRANCH="${{ github.ref_name }}"
           echo "🔍 Checking branch name: $NEW_BRANCH"
 
-          PATTERN='^(feature|chore|bugfix|hotfix)\/[A-Za-z]+-[0-9]+-[a-z0-9-]+$'
+          PATTERN='^(feat|fix|chore|refactor|docs|style|test|perf|build|ci|revert|hotfix|bugfix)\/[A-Za-z]+-[0-9]+-[a-z0-9-]+$'
           if ! [[ "$NEW_BRANCH" =~ $PATTERN ]]; then
             echo "❌ Invalid branch name: '$NEW_BRANCH'
-                  ✅ Expected format: feature|chore|bugfix|hotfix/JIRAID-something
-                  💡 Example: feature/IMS-123-add-login-page"
+                  ✅ Expected format: feat|chore|bugfix|hotfix/JIRAID-something
+                  💡 Example: feat/IMS-123-add-login-page"
 
             git push origin --delete "$NEW_BRANCH"
 
@@ -109,13 +109,13 @@ jobs:
             exit 1
           fi
 
-          # Rule 2 —   Only feature/*, chore/*, bugfix/*, hotfix/* can merge into dev
+          # Rule 2 —   Only feat/*, chore/*, bugfix/*, hotfix/* can merge into dev
           if [[ "$BASE" == "dev" ]] && \
-            [[ ! "$HEAD" =~ ^feature/ ]] && \
+            [[ ! "$HEAD" =~ ^feat/ ]] && \
             [[ ! "$HEAD" =~ ^chore/ ]] && \
             [[ ! "$HEAD" =~ ^bugfix/ ]] && \
             [[ ! "$HEAD" =~ ^hotfix/ ]]; then
-              echo "❌ Only 'feature/*', 'chore/*', 'bugfix/*', or 'hotfix/*' branches can merge into 'dev'."
+              echo "❌ Only 'feat/*', 'chore/*', 'bugfix/*', or 'hotfix/*' branches can merge into 'dev'."
             exit 1
           fi
 

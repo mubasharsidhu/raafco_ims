@@ -2,7 +2,9 @@
 
 .devcontainer/cache
 
-src/_ide_helper.php
+src/_ide_helper*
+src/.phpstorm.meta.php
+
 
 /vendor/
 node_modules/

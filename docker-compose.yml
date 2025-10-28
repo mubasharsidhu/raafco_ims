@@ -5,7 +5,6 @@ services:
       dockerfile: .devcontainer/dockerfiles/php.dockerfile
     volumes:
       - .:/var/www/html
-      - vendor-cache:/var/www/html/src/vendor
       - node-cache:/var/www/html/src/node_modules
       - ./.devcontainer:/workspace/.devcontainer
     working_dir: /var/www/html
@@ -124,7 +123,6 @@ services:
 
 volumes:
   db_pg_data:
-  vendor-cache:
   node-cache:
   mailpit_data:
   pgadmin_data:

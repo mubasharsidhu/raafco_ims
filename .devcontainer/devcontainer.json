@@ -32,9 +32,9 @@
     "mounts": [
         "source=${localWorkspaceFolder}/.devcontainer/cache/sonarlint,target=/home/vscode/.sonarlint,type=bind",
         "source=${localWorkspaceFolder}/src,target=/var/www/html/src,type=bind,consistency=cached",
-        "source=vendor-cache,target=/var/www/html/src/vendor,type=volume",
-        "source=node-cache,target=/var/www/html/src/node_modules,type=volume",
-        "source=${localEnv:HOME}/.composer,target=/home/vscode/.composer,type=bind"
+        "source=${localWorkspaceFolder}/src/vendor,target=/var/www/html/src/vendor,type=bind,consistency=cached",
+        "source=${localEnv:HOME}/.composer,target=/home/vscode/.composer,type=bind",
+        "source=node-cache,target=/var/www/html/src/node_modules,type=volume"
     ],
 
     "customizations": {
@@ -42,6 +42,7 @@
             "extensions": [
                 "bmewburn.vscode-intelephense-client",
                 "xdebug.php-debug",
+                "mehedidracula.php-namespace-resolver",
 
                 "SanderRonde.phpstan-vscode",
 

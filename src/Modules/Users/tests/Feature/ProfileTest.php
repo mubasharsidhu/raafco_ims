@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Modules\Users\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Users\Models\User;
@@ -9,6 +9,12 @@ use Tests\TestCase;
 class ProfileTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->startSession();
+    }
 
     public function test_profile_page_is_displayed(): void
     {
@@ -30,6 +36,7 @@ class ProfileTest extends TestCase
             ->patch('/profile', [
                 'name' => 'Test User',
                 'email' => 'test@example.com',
+                '_token' => csrf_token(),
             ]);
 
         $response
@@ -52,6 +59,7 @@ class ProfileTest extends TestCase
             ->patch('/profile', [
                 'name' => 'Test User',
                 'email' => $user->email,
+                '_token' => csrf_token(),
             ]);
 
         $response
@@ -69,6 +77,7 @@ class ProfileTest extends TestCase
             ->actingAs($user)
             ->delete('/profile', [
                 'password' => 'password', // pragma: allowlist secret
+                '_token' => csrf_token(),
             ]);
 
         $response
@@ -88,6 +97,7 @@ class ProfileTest extends TestCase
             ->from('/profile')
             ->delete('/profile', [
                 'password' => 'wrong-password', // pragma: allowlist secret
+                '_token' => csrf_token(),
             ]);
 
         $response

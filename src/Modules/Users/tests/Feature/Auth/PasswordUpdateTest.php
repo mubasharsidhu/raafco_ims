@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Auth;
+namespace Modules\Users\Tests\Feature\Auth;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -10,6 +10,12 @@ use Tests\TestCase;
 class PasswordUpdateTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->startSession();
+    }
 
     public function test_password_can_be_updated(): void
     {
@@ -22,6 +28,7 @@ class PasswordUpdateTest extends TestCase
                 'current_password' => 'password', // pragma: allowlist secret
                 'password' => 'new-password', // pragma: allowlist secret
                 'password_confirmation' => 'new-password', // pragma: allowlist secret
+                '_token' => csrf_token(),
             ]);
 
         $response
@@ -42,6 +49,7 @@ class PasswordUpdateTest extends TestCase
                 'current_password' => 'wrong-password', // pragma: allowlist secret
                 'password' => 'new-password', // pragma: allowlist secret
                 'password_confirmation' => 'new-password', // pragma: allowlist secret
+                '_token' => csrf_token(),
             ]);
 
         $response

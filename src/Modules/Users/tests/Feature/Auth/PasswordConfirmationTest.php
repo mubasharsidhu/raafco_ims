@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Auth;
+namespace Modules\Users\Tests\Feature\Auth;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Users\Models\User;
@@ -9,6 +9,12 @@ use Tests\TestCase;
 class PasswordConfirmationTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->startSession();
+    }
 
     public function test_confirm_password_screen_can_be_rendered(): void
     {
@@ -25,6 +31,7 @@ class PasswordConfirmationTest extends TestCase
 
         $response = $this->actingAs($user)->post('/confirm-password', [
             'password' => 'password', // pragma: allowlist secret
+            '_token' => csrf_token(),
         ]);
 
         $response->assertRedirect();
@@ -37,6 +44,7 @@ class PasswordConfirmationTest extends TestCase
 
         $response = $this->actingAs($user)->post('/confirm-password', [
             'password' => 'wrong-password', // pragma: allowlist secret
+            '_token' => csrf_token(),
         ]);
 
         $response->assertSessionHasErrors();

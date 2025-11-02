@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Auth;
+namespace Modules\Users\Tests\Feature\Auth;
 
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -11,6 +11,12 @@ use Tests\TestCase;
 class PasswordResetTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->startSession();
+    }
 
     public function test_reset_password_link_screen_can_be_rendered(): void
     {
@@ -25,7 +31,7 @@ class PasswordResetTest extends TestCase
 
         $user = User::factory()->create();
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        $this->post('/forgot-password', ['email' => $user->email, '_token' => csrf_token()]);
 
         Notification::assertSentTo($user, ResetPassword::class);
     }
@@ -36,7 +42,7 @@ class PasswordResetTest extends TestCase
 
         $user = User::factory()->create();
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        $this->post('/forgot-password', ['email' => $user->email, '_token' => csrf_token()]);
 
         Notification::assertSentTo($user, ResetPassword::class, function ($notification) {
             $response = $this->get('/reset-password/'.$notification->token);
@@ -53,7 +59,7 @@ class PasswordResetTest extends TestCase
 
         $user = User::factory()->create();
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        $this->post('/forgot-password', ['email' => $user->email, '_token' => csrf_token()]);
 
         Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
             $response = $this->post('/reset-password', [
@@ -61,6 +67,7 @@ class PasswordResetTest extends TestCase
                 'email' => $user->email,
                 'password' => 'password', // pragma: allowlist secret
                 'password_confirmation' => 'password', // pragma: allowlist secret
+                '_token' => csrf_token(),
             ]);
 
             $response

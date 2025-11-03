@@ -20,6 +20,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if ($this->app->environment('testing')) {
+            Vite::macro('useManifest', fn () => collect());
+            Vite::macro('script', fn () => '');
+            Vite::macro('asset', fn () => '');
+            Vite::macro('preload', fn () => '');
+            Vite::macro('hotFile', fn () => false);
+        }
+
         Vite::prefetch(concurrency: 3);
     }
 }

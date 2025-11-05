@@ -21,7 +21,7 @@
     "resources/js/**/*.ts",
     "resources/js/**/*.tsx",
     "resources/js/**/*.d.ts",
-    "Modules/**/resources/assets/js/**/*.ts",
-    "Modules/**/resources/assets/js/**/*.tsx"
+    "Modules/**/resources/js/**/*.ts",
+    "Modules/**/resources/js/**/*.tsx"
   ]
 }

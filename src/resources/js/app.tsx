@@ -10,7 +10,7 @@ const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
 const pages = {
   ...import.meta.glob("./Pages/**/*.tsx", { eager: true }),
-  ...import.meta.glob("../../Modules/**/resources/assets/js/Pages/**/*.tsx", {
+  ...import.meta.glob("../../Modules/**/resources/js/Pages/**/*.tsx", {
     eager: true,
   }),
 };

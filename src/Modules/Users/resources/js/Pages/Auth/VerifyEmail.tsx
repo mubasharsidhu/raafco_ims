@@ -1,51 +1,84 @@
-import PrimaryButton from '@/Components/PrimaryButton';
-import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import { Head, useForm, Link as InertiaLink } from "@inertiajs/react";
+import {
+  Box,
+  Button,
+  Typography,
+  CircularProgress,
+  Alert,
+  Link as MUILink,
+} from "@mui/material";
+import AppLayout from "@/Layouts/AppLayout";
 
-export default function VerifyEmail({ status }: { status?: string }) {
-    const { post, processing } = useForm({});
+interface Props {
+  status?: string;
+}
 
-    const submit: FormEventHandler = (e) => {
-        e.preventDefault();
+export default function VerifyEmail({ status }: Readonly<Props>) {
+  const { post, processing } = useForm({});
 
-        post(route('verification.send'));
-    };
+  const resend = (e: React.FormEvent) => {
+    e.preventDefault();
+    post(route("verification.send"));
+  };
 
-    return (
-        <GuestLayout>
-            <Head title="Email Verification" />
+  return (
+    <AppLayout maxWidth="xs">
+      <Head title="Verify Email" />
 
-            <div className="mb-4 text-sm text-gray-600">
-                Thanks for signing up! Before getting started, could you verify
-                your email address by clicking on the link we just emailed to
-                you? If you didn't receive the email, we will gladly send you
-                another.
-            </div>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 3,
+          p: 4,
+          bgcolor: (theme) => theme.palette.background.paper,
+          borderRadius: 2,
+          boxShadow: 3,
+        }}
+      >
+        <Typography variant="h5" textAlign="center">
+          Verify Your Email
+        </Typography>
 
-            {status === 'verification-link-sent' && (
-                <div className="mb-4 text-sm font-medium text-green-600">
-                    A new verification link has been sent to the email address
-                    you provided during registration.
-                </div>
-            )}
+        <Typography variant="body2" textAlign="center">
+          Thanks for signing up! Before getting started, please verify your
+          email by clicking the link we sent you.
+        </Typography>
 
-            <form onSubmit={submit}>
-                <div className="mt-4 flex items-center justify-between">
-                    <PrimaryButton disabled={processing}>
-                        Resend Verification Email
-                    </PrimaryButton>
+        {status === "verification-link-sent" && (
+          <Alert severity="success">
+            A new verification link has been sent to your email address.
+          </Alert>
+        )}
 
-                    <Link
-                        href={route('logout')}
-                        method="post"
-                        as="button"
-                        className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                        Log Out
-                    </Link>
-                </div>
-            </form>
-        </GuestLayout>
-    );
+        <Button
+          type="submit"
+          variant="contained"
+          disabled={processing}
+          onClick={resend}
+        >
+          {processing && <CircularProgress size={18} />}
+          Resend Verification Email
+        </Button>
+
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            mt: 1,
+          }}
+        >
+          <MUILink
+            component={InertiaLink}
+            href={route("logout")}
+            method="post"
+            underline="hover"
+            sx={{ textAlign: "center" }}
+          >
+            Logout
+          </MUILink>
+        </Box>
+      </Box>
+    </AppLayout>
+  );
 }

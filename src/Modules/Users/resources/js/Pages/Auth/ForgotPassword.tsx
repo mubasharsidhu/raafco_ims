@@ -1,56 +1,85 @@
-import InputError from '@/Components/InputError';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, useForm } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import { Head, useForm } from "@inertiajs/react";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Link,
+  CircularProgress,
+} from "@mui/material";
+import AppLayout from "@/Layouts/AppLayout";
 
-export default function ForgotPassword({ status }: { status?: string }) {
-    const { data, setData, post, processing, errors } = useForm({
-        email: '',
-    });
+interface ForgotForm {
+  email: string;
+}
 
-    const submit: FormEventHandler = (e) => {
-        e.preventDefault();
+type FormErrors = Record<keyof ForgotForm, string | undefined>;
 
-        post(route('password.email'));
-    };
+export default function ForgotPassword() {
+  const { data, setData, post, processing, errors } = useForm<ForgotForm>({
+    email: "",
+  });
 
-    return (
-        <GuestLayout>
-            <Head title="Forgot Password" />
+  const formErrors: FormErrors = errors as FormErrors;
 
-            <div className="mb-4 text-sm text-gray-600">
-                Forgot your password? No problem. Just let us know your email
-                address and we will email you a password reset link that will
-                allow you to choose a new one.
-            </div>
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    post(route("password.email"));
+  };
 
-            {status && (
-                <div className="mb-4 text-sm font-medium text-green-600">
-                    {status}
-                </div>
-            )}
+  return (
+    <AppLayout maxWidth="xs">
+      <Head title="Forgot Password" />
 
-            <form onSubmit={submit}>
-                <TextInput
-                    id="email"
-                    type="email"
-                    name="email"
-                    value={data.email}
-                    className="mt-1 block w-full"
-                    isFocused={true}
-                    onChange={(e) => setData('email', e.target.value)}
-                />
+      <Box
+        component="form"
+        onSubmit={submit}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          p: 4,
+          bgcolor: (theme) => theme.palette.background.paper,
+          borderRadius: 2,
+          boxShadow: 3,
+        }}
+      >
+        <Typography variant="h5" textAlign="center">
+          Forgot Password
+        </Typography>
 
-                <InputError message={errors.email} className="mt-2" />
+        <Typography variant="body2" textAlign="center">
+          Enter your email and we'll send you reset instructions.
+        </Typography>
 
-                <div className="mt-4 flex items-center justify-end">
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Email Password Reset Link
-                    </PrimaryButton>
-                </div>
-            </form>
-        </GuestLayout>
-    );
+        <TextField
+          fullWidth
+          label="Email"
+          type="email"
+          value={data.email}
+          error={!!formErrors.email}
+          helperText={formErrors.email}
+          disabled={processing}
+          onChange={(e) =>
+            setData((data) => ({ ...data, email: e.target.value }))
+          }
+        />
+
+        <Button
+          type="submit"
+          variant="contained"
+          disabled={processing}
+          fullWidth
+          sx={{ mt: 1 }}
+        >
+          {processing && <CircularProgress size={18} />}
+          Send Reset Link
+        </Button>
+
+        <Link href={route("login")} underline="hover" textAlign="center">
+          Back to Login
+        </Link>
+      </Box>
+    </AppLayout>
+  );
 }

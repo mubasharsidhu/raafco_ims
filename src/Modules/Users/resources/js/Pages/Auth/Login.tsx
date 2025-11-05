@@ -19,7 +19,7 @@ interface LoginForm {
   remember: boolean;
 }
 
-type LoginFormErrors = Record<keyof LoginForm, string | undefined>;
+type FormErrors = Record<keyof LoginForm, string | undefined>;
 
 export default function Login() {
   const { data, setData, post, processing, errors } = useForm<LoginForm>({
@@ -28,7 +28,7 @@ export default function Login() {
     remember: false,
   });
 
-  const formErrors: LoginFormErrors = errors as LoginFormErrors;
+  const formErrors: FormErrors = errors as FormErrors;
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();

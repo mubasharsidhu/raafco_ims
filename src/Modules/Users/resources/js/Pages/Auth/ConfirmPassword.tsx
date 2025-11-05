@@ -1,56 +1,75 @@
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, useForm } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import { Head, useForm } from "@inertiajs/react";
+import React from "react";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
+
+import AppLayout from "@/Layouts/AppLayout";
 
 export default function ConfirmPassword() {
-    const { data, setData, post, processing, errors, reset } = useForm({
-        password: '',
+  const { data, setData, post, processing, errors, reset } = useForm({
+    password: "",
+  });
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    post(route("password.confirm"), {
+      onFinish: () => reset("password"),
     });
+  };
 
-    const submit: FormEventHandler = (e) => {
-        e.preventDefault();
+  return (
+    <AppLayout maxWidth="xs">
+      <Head title="Confirm Password" />
 
-        post(route('password.confirm'), {
-            onFinish: () => reset('password'),
-        });
-    };
+      <Box
+        component="form"
+        onSubmit={submit}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          bgcolor: (theme) => theme.palette.background.paper,
+          p: 4,
+          borderRadius: 2,
+          boxShadow: 3,
+        }}
+      >
+        <Typography variant="h6" textAlign="center" fontWeight={600}>
+          Confirm Password
+        </Typography>
 
-    return (
-        <GuestLayout>
-            <Head title="Confirm Password" />
+        <Typography variant="body2" color="text.secondary" textAlign="center">
+          This is a secure area. Please confirm your password before continuing.
+        </Typography>
 
-            <div className="mb-4 text-sm text-gray-600">
-                This is a secure area of the application. Please confirm your
-                password before continuing.
-            </div>
+        <TextField
+          type="password"
+          fullWidth
+          label="Password"
+          value={data.password}
+          disabled={processing}
+          error={!!errors.password}
+          helperText={errors.password}
+          onChange={(e) =>
+            setData((prev) => ({ ...prev, password: e.target.value }))
+          }
+        />
 
-            <form onSubmit={submit}>
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
-
-                    <TextInput
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={data.password}
-                        className="mt-1 block w-full"
-                        isFocused={true}
-                        onChange={(e) => setData('password', e.target.value)}
-                    />
-
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
-
-                <div className="mt-4 flex items-center justify-end">
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Confirm
-                    </PrimaryButton>
-                </div>
-            </form>
-        </GuestLayout>
-    );
+        <Button
+          type="submit"
+          variant="contained"
+          fullWidth
+          disabled={processing}
+          sx={{ mt: 1 }}
+        >
+          {processing ? <CircularProgress size={18} /> : "Confirm"}
+        </Button>
+      </Box>
+    </AppLayout>
+  );
 }

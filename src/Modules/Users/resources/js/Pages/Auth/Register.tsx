@@ -1,121 +1,150 @@
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import { Head, useForm } from "@inertiajs/react";
+import React from "react";
+import {
+  Button,
+  TextField,
+  Box,
+  Typography,
+  FormControlLabel,
+  Checkbox,
+  Link,
+  CircularProgress,
+} from "@mui/material";
+
+import AppLayout from "@/Layouts/AppLayout";
+
+interface RegisterForm {
+  name: string;
+  email: string;
+  password: string;
+  password_confirmation: string;
+  terms: boolean;
+}
+
+type RegisterFormErrors = Record<keyof RegisterForm, string | undefined>;
 
 export default function Register() {
-    const { data, setData, post, processing, errors, reset } = useForm({
-        name: '',
-        email: '',
-        password: '',
-        password_confirmation: '',
-    });
+  const { data, setData, post, processing, errors } = useForm<RegisterForm>({
+    name: "",
+    email: "",
+    password: "",
+    password_confirmation: "",
+    terms: false,
+  });
 
-    const submit: FormEventHandler = (e) => {
-        e.preventDefault();
+  const formErrors: RegisterFormErrors = errors as RegisterFormErrors;
 
-        post(route('register'), {
-            onFinish: () => reset('password', 'password_confirmation'),
-        });
-    };
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    post(route("register"));
+  };
 
-    return (
-        <GuestLayout>
-            <Head title="Register" />
+  return (
+    <AppLayout maxWidth="xs">
+      <Head title="Register" />
 
-            <form onSubmit={submit}>
-                <div>
-                    <InputLabel htmlFor="name" value="Name" />
+      <Box
+        component="form"
+        onSubmit={submit}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          bgcolor: (theme) => theme.palette.background.paper,
+          p: 4,
+          borderRadius: 2,
+          boxShadow: 3,
+        }}
+      >
+        <Typography variant="h5" textAlign="center">
+          Create an account
+        </Typography>
 
-                    <TextInput
-                        id="name"
-                        name="name"
-                        value={data.name}
-                        className="mt-1 block w-full"
-                        autoComplete="name"
-                        isFocused={true}
-                        onChange={(e) => setData('name', e.target.value)}
-                        required
-                    />
+        <TextField
+          label="Full Name"
+          fullWidth
+          value={data.name}
+          disabled={processing}
+          error={!!formErrors.name}
+          helperText={formErrors.name}
+          onChange={(e) =>
+            setData((data) => ({ ...data, name: e.target.value }))
+          }
+        />
 
-                    <InputError message={errors.name} className="mt-2" />
-                </div>
+        <TextField
+          type="email"
+          fullWidth
+          label="Email"
+          value={data.email}
+          disabled={processing}
+          error={!!formErrors.email}
+          helperText={formErrors.email}
+          onChange={(e) =>
+            setData((data) => ({ ...data, email: e.target.value }))
+          }
+        />
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="email" value="Email" />
+        <TextField
+          type="password"
+          fullWidth
+          label="Password"
+          value={data.password}
+          disabled={processing}
+          error={!!formErrors.password}
+          helperText={formErrors.password}
+          onChange={(e) =>
+            setData((data) => ({ ...data, password: e.target.value }))
+          }
+        />
 
-                    <TextInput
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={data.email}
-                        className="mt-1 block w-full"
-                        autoComplete="username"
-                        onChange={(e) => setData('email', e.target.value)}
-                        required
-                    />
+        <TextField
+          type="password"
+          fullWidth
+          label="Confirm Password"
+          value={data.password_confirmation}
+          disabled={processing}
+          error={!!formErrors.password_confirmation}
+          helperText={formErrors.password_confirmation}
+          onChange={(e) =>
+            setData((data) => ({
+              ...data,
+              password_confirmation: e.target.value,
+            }))
+          }
+        />
 
-                    <InputError message={errors.email} className="mt-2" />
-                </div>
+        <FormControlLabel
+          label="I agree to the Terms & Privacy Policy"
+          disabled={processing}
+          control={
+            <Checkbox
+              checked={data.terms}
+              onChange={(e) =>
+                setData((data) => ({ ...data, terms: e.target.checked }))
+              }
+            />
+          }
+        />
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
+        <Button
+          type="submit"
+          variant="contained"
+          fullWidth
+          disabled={processing}
+          sx={{ mt: 1 }}
+        >
+          {processing && <CircularProgress size={18} />}
+          Create Account
+        </Button>
 
-                    <TextInput
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={data.password}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={(e) => setData('password', e.target.value)}
-                        required
-                    />
-
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
-
-                <div className="mt-4">
-                    <InputLabel
-                        htmlFor="password_confirmation"
-                        value="Confirm Password"
-                    />
-
-                    <TextInput
-                        id="password_confirmation"
-                        type="password"
-                        name="password_confirmation"
-                        value={data.password_confirmation}
-                        className="mt-1 block w-full"
-                        autoComplete="new-password"
-                        onChange={(e) =>
-                            setData('password_confirmation', e.target.value)
-                        }
-                        required
-                    />
-
-                    <InputError
-                        message={errors.password_confirmation}
-                        className="mt-2"
-                    />
-                </div>
-
-                <div className="mt-4 flex items-center justify-end">
-                    <Link
-                        href={route('login')}
-                        className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                        Already registered?
-                    </Link>
-
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Register
-                    </PrimaryButton>
-                </div>
-            </form>
-        </GuestLayout>
-    );
+        <Typography textAlign="center">
+          Already have an account?{" "}
+          <Link href={route("login")} underline="hover">
+            Sign in
+          </Link>
+        </Typography>
+      </Box>
+    </AppLayout>
+  );
 }

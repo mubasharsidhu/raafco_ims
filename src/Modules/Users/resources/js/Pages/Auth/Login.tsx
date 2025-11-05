@@ -8,6 +8,7 @@ import {
   Link,
   FormControlLabel,
   Checkbox,
+  CircularProgress,
 } from "@mui/material";
 
 import AppLayout from "@/Layouts/AppLayout";
@@ -55,39 +56,39 @@ export default function Login() {
         </Typography>
 
         <TextField
-          label="Email"
           type="email"
           fullWidth
+          label="Email"
           value={data.email}
+          disabled={processing}
+          error={!!formErrors.email}
+          helperText={formErrors.email}
           onChange={(e) =>
             setData((data) => ({ ...data, email: e.target.value }))
           }
-          error={!!formErrors.email}
-          helperText={formErrors.email}
         />
 
         <TextField
-          label="Password"
           type="password"
           fullWidth
+          label="Password"
           value={data.password}
+          disabled={processing}
+          error={!!formErrors.password}
+          helperText={formErrors.password}
           onChange={(e) =>
             setData((data) => ({ ...data, password: e.target.value }))
           }
-          error={!!formErrors.password}
-          helperText={formErrors.password}
         />
 
         <FormControlLabel
           label="Remember me"
+          disabled={processing}
           control={
             <Checkbox
               checked={data.remember}
               onChange={(e) =>
-                setData((data) => ({
-                  ...data,
-                  remember: (e.target.checked || false) as false,
-                }))
+                setData((data) => ({ ...data, remember: e.target.checked }))
               }
             />
           }
@@ -99,8 +100,8 @@ export default function Login() {
           color="primary"
           fullWidth
           disabled={processing}
-          sx={{ mt: 1 }}
         >
+          {processing && <CircularProgress size={18} />}
           Sign In
         </Button>
 

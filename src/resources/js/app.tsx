@@ -4,11 +4,13 @@ import "./bootstrap";
 import { createInertiaApp } from "@inertiajs/react";
 import { createRoot } from "react-dom/client";
 
+import ColorModeProvider from "./context/ColorModeContext";
+
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
 const pages = {
   ...import.meta.glob("./Pages/**/*.tsx", { eager: true }),
-  ...import.meta.glob("../../Modules/**/resources/assets/js/Pages/**/*.tsx", {
+  ...import.meta.glob("../../Modules/**/resources/js/Pages/**/*.tsx", {
     eager: true,
   }),
 };
@@ -23,7 +25,11 @@ createInertiaApp({
   setup({ el, App, props }) {
     const root = createRoot(el);
 
-    root.render(<App {...props} />);
+    root.render(
+      <ColorModeProvider>
+        <App {...props} />
+      </ColorModeProvider>
+    );
   },
   progress: {
     color: "#4B5563",
